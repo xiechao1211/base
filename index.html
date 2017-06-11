@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" href="css/aui.2.0.css">
+    <script src="js/jquery-1.12.2.min.js"></script>
+    <script src="js/baseApp.js"></script>
+    <script src="js/baseWx.js"></script>
+    <script src="js/baseDx.js"></script>
+    <script src="js/base.js"></script>
+
+    <style>
+        .clearN-no{border:1px solid #ccc;display: inline-block;padding: 2rem;}
+    </style>
+</head>
+<body>
+<div class="main">
+    <div class="clearN-no">
+        <p>只保留2位小数，并去除其他符号及格式</p>
+        <input type="text" onkeyup="clearNoNum(this)">
+        <input type="text" id="replace" title="">
+        <input type="button" value="弹出框测试" id="toast">
+        <input type="button" value="确认框" id="alert">
+    </div>
+</div>
+<script>
+    $(function () {
+        var alertShow = new chAlert();
+        var toast = new chToast()
+        $('#toast').on('click',function () {
+            toast.loading({
+                title: "加载中"
+            },function(ret){
+                console.log(ret)
+                setTimeout(function(){
+                    toast.hide();
+                }, 3000)
+            });
+        });
+        $('#alert').click(function () {
+            alertShow.alert({
+                title:"弹出提示",
+                msg:'这里是内容',
+                buttons:['取消','确定']
+            },function(ret){
+                if(ret){
+                    alertShow.alert({
+                        title:"提示",
+                        msg:"您点击了第"+ret.buttonIndex+"个按钮",
+                        buttons:['确定']
+                    });
+                }
+            })
+        })
+
+    })
+</script>
+
+<script>    
+    window.onload = function () {
+        var replace = document.getElementById('replace')
+        GetQueryString('title');
+        // 数字验证方法，只保留2位小数
+        function clearNoNum(obj){
+            obj.value = obj.value.replace(/[^\d.]/g,""); //清除"数字"和"."以外的字符
+            obj.value = obj.value.replace(/^\./g,""); //验证第一个字符是数字而不是
+            obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+            obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+            obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3'); //只能输入两个小数
+        }
+
+        function replace(str){
+            return str.replace(new RegExp(key,'g'),"b");
+            //string.replace(new RegExp(key,'g'),"b");
+            // 这里，利用 JS 的 RegExp 对象，将 g/全局 参数单拿了出来，同时，正则的内容可以用变量来代替了
+        }
+
+        // 获取URL参数，有可能return null，必要时做判断，
+        // 该方法也可变通用来获取字符串的各类值，更改name前后的 & 和 =即可
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+
+        //带变量的属性选择器
+        //var catdId = $(this).attr('data-cate');
+        //$(".solution_text[data-cate=" + catdId + "]").fadeIn(1000);
+
+
+
+    }
+
+
+
+</script>
+</body>
+</html>
